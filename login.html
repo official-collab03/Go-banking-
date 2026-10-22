@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+<title>Log in — GoBank</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+<link rel="stylesheet" href="style.css">
+<style>
+  * { box-sizing: border-box; }
+  body { background: var(--pnb-bg); margin: 0; padding: 0; display: flex; justify-content: center; min-height: 100vh; }
+  .auth-container { width: 100%; max-width: 440px; padding: 40px 16px 60px; display: flex; flex-direction: column; justify-content: center; }
+  .auth-brand { display: flex; align-items: center; justify-content: center; gap: 10px; margin-bottom: 32px; text-decoration: none; }
+  .auth-brand:hover { text-decoration: none; }
+  .auth-card { background: #fff; border-radius: 20px; box-shadow: 0 10px 30px rgba(0, 0, 0, 0.04); border: 1px solid var(--line); padding: 32px 28px; width: 100%; }
+  .auth-card h1 { font-size: 1.5rem; color: var(--pnb-blue); margin: 0 0 6px; letter-spacing: -0.02em; }
+  .auth-card .sub { color: var(--text-faint); font-size: 0.88rem; margin: 0 0 24px; }
+  .field { margin-bottom: 18px; }
+  .field label { display: block; font-size: 0.8rem; font-weight: 600; color: var(--text); margin-bottom: 6px; }
+  .field input { width: 100%; padding: 12px 14px; border: 1px solid var(--line-2); border-radius: 10px; font-family: inherit; font-size: 0.9rem; color: var(--ink); background: #fbfdff; }
+  .field input:focus { outline: none; border-color: var(--pnb-gold); box-shadow: 0 0 0 3px rgba(14, 165, 233, 0.12); }
+  .btn-submit { width: 100%; padding: 14px; border-radius: 10px; border: none; background: var(--pnb-gold); color: #fff; font-family: inherit; font-size: 1rem; font-weight: 700; cursor: pointer; margin-top: 8px; }
+  .btn-submit:hover { background: var(--pnb-gold-hover); }
+  .auth-footer { text-align: center; margin-top: 24px; font-size: 0.85rem; color: var(--text-faint); }
+  .auth-footer a { font-weight: 700; color: var(--pnb-gold-hover); }
+  .form-alert { padding: 12px; border-radius: 10px; font-size: 0.85rem; margin-bottom: 16px; display: none; }
+  .form-alert.show { display: block; }
+  .form-alert.error { background: #fee2e2; color: #b91c1c; border: 1px solid #fecaca; }
+  .form-alert.info { background: #e0f2fe; color: #0369a1; border: 1px solid #bae6fd; }
+</style>
+</head>
+<body>
+<div class="auth-container">
+  <a href="index.html" class="auth-brand">
+    <svg viewBox="0 0 100 100" width="48" height="48" fill="none"><circle cx="50" cy="50" r="48" fill="#0ea5e9"/><path d="M55 20 L25 55 H45 L40 85 L75 45 H55 Z" fill="#ffffff"/></svg>
+    <span style="font-size:2rem; font-weight:900; color:var(--pnb-blue); letter-spacing:-0.04em;">GoBank</span>
+  </a>
+  <div class="auth-card">
+    <h1>Welcome Back</h1>
+    <p class="sub">Sign in to your GoBank account.</p>
+    <div class="form-alert" id="loginAlert"></div>
+    <form id="loginForm">
+      <div class="field"><label>Email address</label><input type="email" id="email" placeholder="you@example.com" required /></div>
+      <div class="field"><label>Password</label><input type="password" id="password" placeholder="Your password" required /></div>
+      <button type="submit" class="btn-submit" id="submitBtn"><i class="fas fa-lock-open"></i> Log In</button>
+    </form>
+  </div>
+  <div class="auth-footer">Don't have an account? <a href="signup.html">Open one now</a></div>
+</div>
+<script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-firestore-compat.js"></script>
+<script src="firebase-config.js"></script>
+<script>
+const loginForm = document.getElementById('loginForm'), alertEl = document.getElementById('loginAlert'), submitBtn = document.getElementById('submitBtn');
+function showAlert(msg, type) { alertEl.textContent = msg; alertEl.className = 'form-alert show ' + (type || 'error'); }
+loginForm.addEventListener('submit', async (e) => {
+  e.preventDefault(); alertEl.className = 'form-alert'; submitBtn.disabled = true; submitBtn.innerHTML = '<i class="fas fa-circle-notch fa-spin"></i> Signing in…';
+  try {
+    const cred = await auth.signInWithEmailAndPassword(document.getElementById('email').value.trim().toLowerCase(), document.getElementById('password').value);
+    const snap = await db.collection('swifttrust_users').doc(cred.user.uid).get();
+    if (!snap.exists) { await auth.signOut(); showAlert('No GoBank account linked.'); return; }
+    const data = snap.data();
+    if (data.status === 'blocked') { await auth.signOut(); showAlert('Account suspended.'); return; }
+    if (data.status === 'pending') { await auth.signOut(); showAlert('Account under review.', 'info'); return; }
+    window.location.href = 'dashboard.html';
+  } catch (err) { showAlert('Incorrect email or password.'); }
+  finally { submitBtn.disabled = false; submitBtn.innerHTML = '<i class="fas fa-lock-open"></i> Log In'; }
+});
+</script>
+</body>
+</html>

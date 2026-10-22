@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>GoBank — Modern Digital Banking</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+<link rel="stylesheet" href="style.css">
+<style>
+  * { box-sizing: border-box; } body { background: #fff; margin: 0; padding: 0; }
+  .lp-nav { position: sticky; top: 0; background: #fff; border-bottom: 1px solid var(--line); z-index: 100; }
+  .lp-nav-inner { max-width: 1200px; margin: 0 auto; padding: 0 24px; height: 80px; display: flex; align-items: center; justify-content: space-between; }
+  .lp-brand { display: flex; align-items: center; gap: 10px; text-decoration: none; }
+  .lp-brand .pnb-logo-text { font-size: 1.8rem; color: var(--pnb-blue); font-weight: 900; letter-spacing: -0.04em; }
+  .lp-menu-btn { background: none; border: none; font-size: 1.6rem; color: var(--pnb-blue); cursor: pointer; padding: 8px; }
+  .menu-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 1000; opacity: 0; pointer-events: none; transition: opacity 0.3s; }
+  .menu-overlay.open { opacity: 1; pointer-events: auto; }
+  .side-menu { position: fixed; top: 0; right: -350px; width: 100%; max-width: 350px; height: 100vh; background: #fff; z-index: 1001; box-shadow: -5px 0 30px rgba(0,0,0,0.1); transition: right 0.3s; display: flex; flex-direction: column; }
+  .side-menu.open { right: 0; }
+  .side-menu-header { padding: 24px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--line); }
+  .side-menu-close { background: var(--pnb-bg); border: none; width: 36px; height: 36px; border-radius: 50%; font-size: 1.2rem; color: var(--pnb-blue); cursor: pointer; display: grid; place-items: center; }
+  .side-menu-links { padding: 24px; flex: 1; overflow-y: auto; display: flex; flex-direction: column; gap: 16px; }
+  .side-menu-links a { font-size: 1rem; font-weight: 600; color: var(--ink); padding: 10px 0; border-bottom: 1px solid var(--line); }
+  .side-menu-actions { padding: 24px; border-top: 1px solid var(--line); display: flex; flex-direction: column; gap: 12px; background: var(--pnb-bg); }
+  .side-btn { padding: 14px; border-radius: 10px; font-weight: 700; text-align: center; font-size: 0.95rem; transition: 0.15s; }
+  .side-btn-outline { border: 1px solid var(--pnb-blue); color: var(--pnb-blue); }
+  .side-btn-primary { background: var(--pnb-gold); color: #fff; border: 1px solid var(--pnb-gold); }
+  .lp-hero { padding: 80px 20px 100px; max-width: 1200px; margin: 0 auto; display: grid; grid-template-columns: 1fr 1fr; gap: 60px; align-items: center; }
+  .lp-hero-text h1 { font-size: 3.5rem; line-height: 1.1; color: var(--pnb-blue); margin-bottom: 24px; letter-spacing: -0.04em; font-weight: 900; }
+  .lp-hero-text p { font-size: 1.15rem; color: var(--text-dim); margin-bottom: 36px; line-height: 1.6; max-width: 500px; }
+  .lp-hero-ctas { display: flex; gap: 16px; }
+  .lp-btn-lg { padding: 16px 32px; border-radius: 12px; font-weight: 700; font-size: 1.05rem; text-decoration: none; }
+  .btn-primary { background: var(--pnb-gold); color: #fff; }
+  .lp-hero-visual { position: relative; display: flex; justify-content: center; }
+  .lp-card-graphic { width: 100%; max-width: 420px; aspect-ratio: 1.58; background: linear-gradient(135deg, #0f172a, #1e293b); border-radius: 24px; padding: 32px; color: #fff; box-shadow: 0 30px 60px rgba(15, 23, 42, 0.25); display: flex; flex-direction: column; justify-content: space-between; position: relative; overflow: hidden; transform: rotate(-2deg); transition: transform 0.3s; }
+  .lp-card-graphic:hover { transform: rotate(0deg) scale(1.02); }
+  .lp-card-graphic::after { content: ''; position: absolute; width: 250px; height: 250px; background: rgba(14, 165, 233, 0.15); border-radius: 50%; top: -100px; right: -80px; }
+  .lp-card-top { display: flex; justify-content: space-between; font-weight: 800; font-size: 1.3rem; position: relative; z-index: 1; }
+  .lp-card-number { font-family: ui-monospace, monospace; font-size: 1.4rem; letter-spacing: 0.15em; margin: 30px 0; position: relative; z-index: 1; }
+  .lp-card-bottom { display: flex; justify-content: space-between; font-size: 0.8rem; color: #94a3b8; text-transform: uppercase; position: relative; z-index: 1; }
+  .lp-card-bottom strong { color: #fff; font-size: 1.1rem; display: block; margin-top: 4px; }
+  .lp-features { background: var(--pnb-bg); padding: 80px 20px; }
+  .lp-features-inner { max-width: 1200px; margin: 0 auto; }
+  .lp-section-header h2 { font-size: 2.4rem; color: var(--pnb-blue); margin-bottom: 16px; letter-spacing: -0.02em; text-align: center; }
+  .lp-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; }
+  .lp-feature-card { background: #fff; padding: 32px; border-radius: 16px; border: 1px solid var(--line); }
+  .lp-feature-icon { width: 48px; height: 48px; background: #e0f2fe; color: var(--pnb-gold-hover); border-radius: 12px; display: grid; place-items: center; font-size: 1.2rem; margin-bottom: 20px; }
+  .lp-feature-card h3 { font-size: 1.2rem; color: var(--pnb-blue); margin-bottom: 12px; }
+  .lp-feature-card p { color: var(--text-dim); font-size: 0.95rem; line-height: 1.5; margin: 0; }
+  .lp-footer { background: var(--pnb-blue); color: #94a3b8; padding: 60px 20px 30px; text-align: center; }
+  .lp-footer .pnb-logo-text { color: #fff; font-size: 2rem; margin-bottom: 16px; display: block; font-weight:900; }
+  .lp-footer p { margin-bottom: 8px; font-size: 0.85rem; }
+  @media (max-width: 768px) { .lp-hero { grid-template-columns: 1fr; text-align: center; gap: 40px; } .lp-hero-text p { margin: 0 auto 32px; } .lp-hero-ctas { justify-content: center; } .lp-grid { grid-template-columns: 1fr; } .lp-hero-text h1 { font-size: 2.4rem; } }
+</style>
+</head>
+<body>
+<nav class="lp-nav">
+  <div class="lp-nav-inner">
+    <a href="index.html" class="lp-brand">
+      <svg viewBox="0 0 100 100" width="40" height="40" fill="none"><circle cx="50" cy="50" r="48" fill="#0ea5e9"/><path d="M55 20 L25 55 H45 L40 85 L75 45 H55 Z" fill="#ffffff"/></svg>
+      <span class="pnb-logo-text">GoBank</span>
+    </a>
+    <button class="lp-menu-btn" id="openMenu"><i class="fas fa-bars"></i></button>
+  </div>
+</nav>
+<div class="menu-overlay" id="menuOverlay"></div>
+<div class="side-menu" id="sideMenu">
+  <div class="side-menu-header"><span class="pnb-logo-text">GoBank</span><button class="side-menu-close" id="closeMenu"><i class="fas fa-times"></i></button></div>
+  <div class="side-menu-links"><a href="#">Personal Banking</a><a href="#">Business Banking</a><a href="#">Loans & Credit</a><a href="#">Investments</a><a href="#">Help & Support</a></div>
+  <div class="side-menu-actions"><a href="login.html" class="side-btn side-btn-outline">Log In</a><a href="signup.html" class="side-btn side-btn-primary">Open an Account</a></div>
+</div>
+<section class="lp-hero">
+  <div class="lp-hero-text">
+    <h1>Banking made simple for every Filipino.</h1>
+    <p>Experience secure, instant, and fee-free banking with GoBank. Manage your finances, transfer funds, and save for the future—all in one powerful app.</p>
+    <div class="lp-hero-ctas"><a href="signup.html" class="lp-btn-lg btn-primary">Open an Account</a><a href="login.html" class="lp-btn-lg" style="border: 1px solid #cbd5e1; color: #0f172a;">Log In</a></div>
+  </div>
+  <div class="lp-hero-visual">
+    <div class="lp-card-graphic">
+      <div class="lp-card-top"><div>GoBank <span style="color:var(--pnb-gold);">Debit</span></div><i class="fas fa-wifi"></i></div>
+      <div class="lp-card-number">•••• •••• •••• 4821</div>
+      <div class="lp-card-bottom"><div>Card Holder<strong>JUAN DELA CRUZ</strong></div><div>Expires<strong>09/29</strong></div></div>
+    </div>
+  </div>
+</section>
+<section class="lp-features">
+  <div class="lp-features-inner">
+    <h2 class="lp-section-header">Why choose GoBank?</h2>
+    <div class="lp-grid">
+      <div class="lp-feature-card"><div class="lp-feature-icon"><i class="fas fa-bolt"></i></div><h3>Instant Transfers</h3><p>Send money to any GoBank account or external bank in seconds. No waiting, no delays.</p></div>
+      <div class="lp-feature-card"><div class="lp-feature-icon"><i class="fas fa-shield-halved"></i></div><h3>Bank-Grade Security</h3><p>Your transactions are protected with 256-bit encryption and a personal 4-digit PIN.</p></div>
+      <div class="lp-feature-card"><div class="lp-feature-icon"><i class="fas fa-piggy-bank"></i></div><h3>Grow Your Savings</h3><p>Earn high interest on your savings and lock funds securely for future goals.</p></div>
+    </div>
+  </div>
+</section>
+<footer class="lp-footer">
+  <span class="pnb-logo-text">GoBank</span>
+  <p>Educational Simulation. Not a real bank.</p>
+  <p>All data is securely processed for demonstration purposes.</p>
+  <p style="margin-top:20px; opacity:0.5; font-size:0.75rem;">© 2026 GoBank. All rights reserved.</p>
+</footer>
+<script>
+  const openBtn = document.getElementById('openMenu'), closeBtn = document.getElementById('closeMenu'), menu = document.getElementById('sideMenu'), overlay = document.getElementById('menuOverlay');
+  function toggleMenu() { menu.classList.toggle('open'); overlay.classList.toggle('open'); }
+  openBtn.addEventListener('click', toggleMenu); closeBtn.addEventListener('click', toggleMenu); overlay.addEventListener('click', toggleMenu);
+</script>
+</body>
+</html>

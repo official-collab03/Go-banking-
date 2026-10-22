@@ -1,0 +1,332 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+<title>Dashboard — GoBank</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+<link rel="stylesheet" href="style.css">
+<style>
+  * { box-sizing: border-box; }
+  body { background: var(--pnb-bg); margin: 0; padding: 0; font-family: 'Inter', sans-serif; }
+  .mob-shell { max-width: 600px; margin: 0 auto; background: var(--pnb-bg); min-height: 100vh; position: relative; padding-bottom: 100px; }
+  .mob-header { background: #fff; border-bottom: 1px solid var(--line); position: sticky; top: 0; z-index: 40; padding: 16px 20px; display: flex; align-items: center; justify-content: space-between; }
+  .dash-greeting { padding: 28px 20px 20px; }
+  .dash-greeting h1 { font-size: 1.7rem; color: var(--pnb-blue); font-weight: 900; letter-spacing: -0.03em; margin: 0 0 4px; }
+  .dash-greeting p { color: var(--text-dim); font-size: 0.95rem; margin: 0; }
+  
+  /* ============================================================
+     NEW BALANCE CARD STYLES (Navy Blue Background)
+     ============================================================ */
+  .hero-card {
+    margin: 0 20px 24px;
+    background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+    border-radius: 24px;
+    padding: 24px;
+    position: relative;
+    overflow: hidden;
+    color: #ffffff;
+    box-shadow: 0 10px 30px rgba(15, 23, 42, 0.2);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    font-family: 'Inter', sans-serif;
+  }
+  .hero-top { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 24px; }
+  .hero-user { display: flex; align-items: center; gap: 12px; }
+  .hero-avatar { 
+    width: 44px; height: 44px; border-radius: 50%; 
+    background: rgba(255, 255, 255, 0.15);
+    color: #ffffff; 
+    display: grid; place-items: center; font-weight: 700; font-size: 1.1rem; 
+  }
+  .hero-greeting { font-size: 0.8rem; color: #94a3b8; }
+  .hero-name { font-size: 1.05rem; font-weight: 700; color: #ffffff; }
+  .hero-datetime { text-align: right; }
+  .hero-time { font-size: 1rem; font-weight: 600; font-variant-numeric: tabular-nums; color: #ffffff; }
+  .hero-date { font-size: 0.75rem; color: #94a3b8; }
+  
+  .hero-balance-row { display: flex; align-items: flex-start; margin-bottom: 24px; }
+  .hero-label { font-size: 0.8rem; color: #94a3b8; margin-bottom: 4px; }
+  .hero-balance-wrapper { display: flex; align-items: center; }
+  .hero-balance { font-size: 2.2rem; font-weight: 800; letter-spacing: -0.02em; color: #ffffff; }
+  #toggleBalanceEye { color: #94a3b8; margin-left: 10px; cursor: pointer; opacity: 0.8; }
+  
+  .hero-divider { height: 1px; background: rgba(255, 255, 255, 0.15); margin-bottom: 20px; }
+  
+  .hero-account-row { display: flex; align-items: center; gap: 16px; margin-bottom: 24px; }
+  .hero-bank-icon { 
+    width: 40px; height: 40px; border-radius: 50%; 
+    background: rgba(255, 255, 255, 0.15);
+    color: #7cb3ff; 
+    display: grid; place-items: center; font-size: 1.1rem; 
+  }
+  .hero-account-details { display: flex; flex-direction: column; gap: 4px; }
+  .hero-account-label { font-size: 0.75rem; color: #94a3b8; }
+  .hero-account-num { font-size: 1.1rem; font-weight: 600; font-family: ui-monospace, monospace; letter-spacing: 0.5px; color: #ffffff; }
+  .hero-status-badge { 
+    display: inline-flex; align-items: center; gap: 6px; 
+    background: rgba(34, 197, 94, 0.2); color: #4ade80; 
+    font-size: 0.7rem; font-weight: 600; padding: 2px 10px; border-radius: 12px; width: fit-content; 
+  }
+  .hero-status-badge .dot { width: 6px; height: 6px; background: #4ade80; border-radius: 50%; }
+  
+  .hero-actions { display: flex; gap: 12px; }
+  .hero-btn { 
+    flex: 1; display: flex; align-items: center; justify-content: center; gap: 8px; 
+    padding: 12px; border-radius: 12px; font-size: 0.85rem; font-weight: 600; text-decoration: none; 
+  }
+  .hero-btn-outline { 
+    background: rgba(255, 255, 255, 0.08); 
+    color: #ffffff; 
+    border: 1px solid rgba(255, 255, 255, 0.2); 
+    transition: all 0.2s; 
+  }
+  .hero-btn-outline:hover { 
+    background: rgba(255, 255, 255, 0.15); 
+    border-color: rgba(255, 255, 255, 0.3);
+    color: #ffffff; 
+    text-decoration: none; 
+  }
+  /* ============================================================ */
+
+  .dash-cards { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin: 0 20px 24px; }
+  .dash-stat-card { background: #fff; border: 1px solid var(--line); border-radius: 20px; padding: 20px; box-shadow: 0 4px 12px rgba(0,0,0,0.02); }
+  .dash-stat-icon { width: 36px; height: 36px; border-radius: 10px; display: grid; place-items: center; font-size: 1rem; margin-bottom: 12px; }
+  .dash-stat-icon.checking { background: #f1f5f9; color: #0f172a; }
+  .dash-stat-icon.saving { background: #e0f2fe; color: var(--pnb-gold-hover); }
+  .dash-stat-label { font-size: 0.75rem; font-weight: 700; letter-spacing: 0.05em; color: var(--text-faint); text-transform: uppercase; margin-bottom: 6px; }
+  .dash-stat-val { font-size: 1.4rem; font-weight: 800; color: var(--pnb-blue); letter-spacing: -0.02em; }
+  .quick-actions-card { margin: 0 20px 32px; background: #fff; border: 1px solid var(--line); border-radius: 20px; padding: 24px; box-shadow: 0 4px 12px rgba(0,0,0,0.02); }
+  .quick-actions-head { font-size: 1.1rem; font-weight: 800; color: var(--pnb-blue); margin-bottom: 20px; display: flex; align-items: center; gap: 10px; }
+  .quick-actions-icon { width: 32px; height: 32px; border-radius: 8px; background: #e0f2fe; color: var(--pnb-gold-hover); display: grid; place-items: center; font-size: 1rem; }
+  .action-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+  .action-tile { background: var(--pnb-bg); border: 1px solid var(--line); border-radius: 16px; padding: 20px 10px; display: flex; flex-direction: column; align-items: center; gap: 12px; text-decoration: none; color: var(--pnb-blue); font-weight: 700; font-size: 0.85rem; transition: 0.2s; }
+  .action-tile:hover { background: #fff; border-color: var(--pnb-gold); box-shadow: 0 8px 16px rgba(14,165,233,0.05); transform: translateY(-2px); text-decoration: none; }
+  .action-tile i { font-size: 1.4rem; color: var(--pnb-gold-hover); }
+  .section-title { display: flex; justify-content: space-between; align-items: center; margin: 0 20px 16px; }
+  .section-title h3 { font-size: 1.2rem; color: var(--pnb-blue); font-weight: 800; letter-spacing: -0.02em; margin: 0; }
+  .section-title a { font-size: 0.85rem; color: var(--pnb-gold-hover); font-weight: 700; text-decoration: none; }
+  .goal-card { background: #fff; border: 1px solid var(--line); border-radius: 20px; padding: 24px; margin: 0 20px 32px; box-shadow: 0 4px 12px rgba(0,0,0,0.02); }
+  .goal-header { display: flex; justify-content: space-between; margin-bottom: 16px; align-items: flex-end; }
+  .goal-title { font-size: 0.95rem; font-weight: 700; color: var(--ink); }
+  .goal-amounts { font-size: 0.85rem; color: var(--text-faint); }
+  .goal-amounts strong { color: var(--pnb-gold-hover); font-size: 1rem; font-weight: 800; }
+  .goal-bar { height: 10px; background: #e5e7eb; border-radius: 99px; overflow: hidden; margin-bottom: 12px; }
+  .goal-fill { height: 100%; background: linear-gradient(90deg, #0ea5e9, #0284c7); border-radius: 99px; width: 0%; transition: width 0.6s cubic-bezier(0.4, 0, 0.2, 1); }
+  .goal-sub { font-size: 0.75rem; color: var(--text-faint); font-weight: 600; text-align: right; }
+  .tx-mini-list { background: #fff; border: 1px solid var(--line); border-radius: 20px; margin: 0 20px 32px; overflow: hidden; box-shadow: 0 4px 12px rgba(0,0,0,0.02); }
+  .tx-mini-row { display: flex; align-items: center; gap: 16px; padding: 18px 20px; border-bottom: 1px solid var(--line); }
+  .tx-mini-icon { width: 44px; height: 44px; border-radius: 12px; display: grid; place-items: center; font-size: 1rem; flex-shrink: 0; }
+  .tx-mini-icon.in { background: #dcfce7; color: #15803d; }
+  .tx-mini-icon.out { background: #fee2e2; color: #b91c1c; }
+  .tx-mini-main { flex: 1; min-width: 0; }
+  .tx-mini-desc { font-size: 0.9rem; font-weight: 700; color: var(--ink); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .tx-mini-date { font-size: 0.75rem; color: var(--text-faint); margin-top: 4px; font-weight: 500; }
+  .tx-mini-amt { font-size: 1rem; font-weight: 800; white-space: nowrap; }
+  .tx-mini-amt.pos { color: #15803d; }
+  .tx-mini-amt.neg { color: var(--ink); }
+  .promo-banner { margin: 0 20px 24px; border-radius: 20px; padding: 28px; background: linear-gradient(135deg, #0f172a, #1e293b); color: #fff; position: relative; overflow: hidden; display: flex; align-items: center; justify-content: space-between; box-shadow: 0 12px 24px rgba(15,23,42,0.15); }
+  .promo-text { position: relative; z-index: 1; }
+  .promo-text h4 { font-size: 1.15rem; font-weight: 800; margin: 0 0 8px; }
+  .promo-text p { font-size: 0.85rem; color: #94a3b8; max-width: 200px; line-height: 1.5; margin: 0; }
+  .promo-btn { position: relative; z-index: 1; background: var(--pnb-gold); color: #fff; padding: 12px 20px; border-radius: 10px; font-size: 0.85rem; font-weight: 800; text-decoration: none; white-space: nowrap; }
+</style>
+</head>
+<body>
+<div class="mob-shell">
+  <header class="mob-header">
+    <div style="display:flex; align-items:center; gap:12px;">
+      <button id="menuBtn" style="background:none;border:none;font-size:1.3rem;color:var(--pnb-blue);cursor:pointer;"><i class="fas fa-bars"></i></button>
+      <a href="dashboard.html" style="display:flex; align-items:center; gap:8px; text-decoration:none;">
+        <svg viewBox="0 0 100 100" width="32" height="32" fill="none"><circle cx="50" cy="50" r="48" fill="#0ea5e9"/><path d="M55 20 L25 55 H45 L40 85 L75 45 H55 Z" fill="#ffffff"/></svg>
+        <span style="font-size:1.4rem; font-weight:900; color:var(--pnb-blue); letter-spacing:-0.04em; line-height:1;">GoBank</span>
+      </a>
+    </div>
+    <!-- Logout button removed here -->
+  </header>
+  
+  <div class="dash-greeting"><h1>Hello, <span id="firstName">—</span></h1><p>Here's an overview of your GoBank accounts.</p></div>
+  
+  <!-- NAVY BLUE HERO CARD -->
+  <div class="hero-card">
+    <div class="hero-top">
+      <div class="hero-user">
+        <div class="hero-avatar" id="avatarInitial">M</div>
+        <div class="hero-user-info">
+          <div class="hero-greeting" id="heroGreeting">Good Afternoon</div>
+          <div class="hero-name" id="heroUserName">User</div>
+        </div>
+      </div>
+      <div class="hero-datetime">
+        <div class="hero-time" id="liveTime">00:00:00</div>
+        <div class="hero-date" id="liveDate">Loading date...</div>
+      </div>
+    </div>
+
+    <div class="hero-balance-row">
+      <div>
+        <div class="hero-label">Available Balance</div>
+        <div class="hero-balance-wrapper">
+          <div class="hero-balance" id="totalBalance">₱0.00</div>
+          <i class="far fa-eye" id="toggleBalanceEye"></i>
+        </div>
+      </div>
+    </div>
+
+    <div class="hero-divider"></div>
+
+    <div class="hero-account-row">
+      <div class="hero-bank-icon"><i class="fas fa-landmark"></i></div>
+      <div class="hero-account-details">
+        <div class="hero-account-label">Your Account Number</div>
+        <div class="hero-account-num" id="accountNum">0000 000 000</div>
+        <div class="hero-status-badge"><span class="dot"></span> Active</div>
+      </div>
+    </div>
+
+    <div class="hero-actions">
+      <a href="history.html" class="hero-btn hero-btn-outline"><i class="fas fa-chart-line"></i> Transactions</a>
+      <a href="#" class="hero-btn hero-btn-outline"><i class="fas fa-file-alt"></i> Statement</a>
+    </div>
+  </div>
+  <!-- END HERO CARD -->
+
+  <div class="dash-cards">
+    <div class="dash-stat-card"><div class="dash-stat-icon checking"><i class="fas fa-wallet"></i></div><div class="dash-stat-label">Checking</div><div class="dash-stat-val" id="checkingBal">₱0.00</div></div>
+    <div class="dash-stat-card"><div class="dash-stat-icon saving"><i class="fas fa-lock"></i></div><div class="dash-stat-label">Save</div><div class="dash-stat-val" id="saveBal">₱0.00</div></div>
+  </div>
+  <div class="quick-actions-card">
+    <div class="quick-actions-head"><div class="quick-actions-icon"><i class="fas fa-bolt"></i></div>Quick Actions</div>
+    <div class="action-row">
+      <a href="transfer-internal.html" class="action-tile"><i class="fas fa-building-columns"></i><span>To GoBank</span></a>
+      <a href="transfer-external.html" class="action-tile"><i class="fas fa-exchange-alt"></i><span>To Bank</span></a>
+      <a href="save.html" class="action-tile"><i class="fas fa-piggy-bank"></i><span>Save</span></a>
+    </div>
+  </div>
+  <div class="section-title"><h3>Savings Goal</h3><a href="save.html">Manage</a></div>
+  <div class="goal-card">
+    <div class="goal-header"><div class="goal-title">Emergency Fund</div><div class="goal-amounts"><strong id="goalCurrent">₱0</strong> / ₱50,000</div></div>
+    <div class="goal-bar"><div class="goal-fill" id="goalFill"></div></div>
+    <div class="goal-sub" id="goalPct">0% achieved</div>
+  </div>
+  <div class="section-title"><h3>Recent Activity</h3><a href="history.html">See All</a></div>
+  <div class="tx-mini-list" id="recentTxList"><div class="empty-state"><i class="fas fa-circle-notch fa-spin"></i><p>Loading...</p></div></div>
+  <div class="promo-banner">
+    <div class="promo-text"><h4>Get your GoBank Credit Card</h4><p>Apply now and get 0% interest for 3 months on all purchases.</p></div>
+    <a href="#" class="promo-btn" onclick="event.preventDefault(); stbToast('Coming soon!');">Apply Now</a>
+  </div>
+</div>
+<nav class="bottom-nav">
+  <a href="dashboard.html" class="bottom-nav-item active"><i class="fas fa-house"></i><span>Home</span></a>
+  <a href="history.html" class="bottom-nav-item"><i class="fas fa-clock-rotate-left"></i><span>History</span></a>
+  <a href="#" id="bottomNavMenu" class="bottom-nav-item"><i class="fas fa-bars"></i><span>Menu</span></a>
+  <a href="profile.html" class="bottom-nav-item"><i class="fas fa-user"></i><span>Profile</span></a>
+</nav>
+<script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-firestore-compat.js"></script>
+<script src="firebase-config.js"></script>
+<script src="drawer.js"></script>
+<script>
+let currentUid = null, userProfile = null, accountsCache = [], savesCache = [];
+let unsubAccounts, unsubSaves, unsubTxOut, unsubTxIn;
+let isBalanceHidden = false;
+
+auth.onAuthStateChanged(async (user) => {
+  if (!user) { window.location.href = 'login.html'; return; }
+  const snap = await db.collection('swifttrust_users').doc(user.uid).get();
+  if (!snap.exists) { await auth.signOut(); window.location.href = 'login.html'; return; }
+  const data = snap.data();
+  if (data.status !== 'approved') { await auth.signOut(); window.location.href = 'login.html'; return; }
+  currentUid = user.uid; userProfile = data;
+  
+  document.getElementById('firstName').textContent = (data.fullName || '').split(' ')[0] || 'there';
+  
+  const nameParts = (data.fullName || 'User').split(' ');
+  document.getElementById('heroUserName').textContent = nameParts[0] || 'User';
+  document.getElementById('avatarInitial').textContent = (nameParts[0] || 'U').charAt(0).toUpperCase();
+  
+  const hour = new Date().getHours();
+  document.getElementById('heroGreeting').textContent = hour < 12 ? "Good Morning" : (hour < 18 ? "Good Afternoon" : "Good Evening");
+
+  startListeners();
+});
+
+// Removed headerLogout event listener
+
+function startListeners() {
+  if (unsubAccounts) return;
+  unsubAccounts = db.collection('swifttrust_accounts').where('ownerId', '==', currentUid).onSnapshot(snap => { accountsCache = []; snap.forEach(d => accountsCache.push({ id: d.id, ...d.data() })); updateUI(); });
+  unsubSaves = db.collection('swifttrust_saves').where('ownerId', '==', currentUid).onSnapshot(snap => { savesCache = []; snap.forEach(d => savesCache.push({ id: d.id, ...d.data() })); updateUI(); });
+  let txOut = [], txIn = [];
+  unsubTxOut = db.collection('swifttrust_transactions').where('fromUid', '==', currentUid).limit(5).onSnapshot(snap => { txOut = []; snap.forEach(d => txOut.push({ id: d.id, ...d.data() })); renderRecentTx(txOut, txIn); });
+  unsubTxIn = db.collection('swifttrust_transactions').where('toUid', '==', currentUid).limit(5).onSnapshot(snap => { txIn = []; snap.forEach(d => txIn.push({ id: d.id, ...d.data() })); renderRecentTx(txOut, txIn); });
+}
+
+function updateUI() {
+  const checking = accountsCache.find(a => a.type === 'checking') || accountsCache[0];
+  if (checking) { 
+    const balString = stbMoney(checking.balance);
+    const balEl = document.getElementById('totalBalance');
+    
+    balEl.dataset.realVal = balString;
+    
+    if (!isBalanceHidden) {
+      balEl.textContent = balString; 
+    }
+    
+    document.getElementById('checkingBal').textContent = stbMoney(checking.balance); 
+    document.getElementById('accountNum').textContent = String(checking.accountNumber || '0000 000 000'); 
+  }
+  
+  const lockedSaves = savesCache.filter(s => s.status === 'locked'), totalLocked = lockedSaves.reduce((sum, s) => sum + Number(s.amount || 0), 0);
+  document.getElementById('saveBal').textContent = stbMoney(totalLocked);
+  const progress = Math.min(100, (totalLocked / 50000) * 100);
+  document.getElementById('goalCurrent').textContent = stbMoney(totalLocked); document.getElementById('goalFill').style.width = progress + '%'; document.getElementById('goalPct').textContent = Math.round(progress) + '% achieved';
+}
+
+function renderRecentTx(txOut, txIn) {
+  const all = [...txOut, ...txIn], map = new Map();
+  all.forEach(t => map.set(t.id, t));
+  const latest = Array.from(map.values()).sort((a, b) => (b.createdAt?.toDate?.()?.getTime?.() || 0) - (a.createdAt?.toDate?.()?.getTime?.() || 0)).slice(0, 3);
+  const el = document.getElementById('recentTxList');
+  if (latest.length === 0) { el.innerHTML = `<div style="padding:30px; text-align:center; color:var(--text-faint); font-size:0.9rem;"><i class="fas fa-receipt" style="font-size:1.5rem; margin-bottom:8px; display:block; opacity:0.5;"></i>No recent transactions</div>`; return; }
+  el.innerHTML = latest.map(t => {
+    const isOut = t.fromUid === currentUid, sign = isOut ? '-' : '+', colorClass = isOut ? 'neg' : 'pos';
+    let title = t.description || (isOut ? `To ${t.toAccountName || 'Account'}` : `From ${t.fromAccountName || 'Account'}`);
+    if (t.type === 'internal_move') title = 'Moved to Savings'; if (t.type === 'save_lock') title = 'Funds Locked';
+    return `<div class="tx-mini-row"><div class="tx-mini-icon ${isOut ? 'out' : 'in'}"><i class="fas ${isOut ? 'fa-arrow-up' : 'fa-arrow-down'}"></i></div><div class="tx-mini-main"><div class="tx-mini-desc">${title}</div><div class="tx-mini-date">${stbDate(t.createdAt)}</div></div><div class="tx-mini-amt ${colorClass}">${sign}${stbMoney(t.amount)}</div></div>`;
+  }).join('');
+}
+
+// Live Clock Update (Set to Philippine Time)
+function updateClock() {
+  const now = new Date();
+  const timeEl = document.getElementById('liveTime');
+  const dateEl = document.getElementById('liveDate');
+  
+  // Added timeZone: 'Asia/Manila' to force Philippine Time
+  if(timeEl) timeEl.textContent = now.toLocaleTimeString('en-US', { hour12: false, timeZone: 'Asia/Manila' });
+  if(dateEl) dateEl.textContent = now.toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric', timeZone: 'Asia/Manila' });
+}
+setInterval(updateClock, 1000);
+updateClock();
+
+// Eye Icon Toggle
+document.getElementById('toggleBalanceEye').addEventListener('click', function() {
+  const balEl = document.getElementById('totalBalance');
+  isBalanceHidden = !isBalanceHidden;
+  if (isBalanceHidden) {
+    balEl.textContent = '₱***,***.**';
+    this.classList.remove('fa-eye');
+    this.classList.add('fa-eye-slash');
+  } else {
+    balEl.textContent = balEl.dataset.realVal || '₱0.00';
+    this.classList.remove('fa-eye-slash');
+    this.classList.add('fa-eye');
+  }
+});
+</script>
+</body>
+</html>

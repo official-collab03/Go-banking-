@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+<title>Help — PNB</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+<link rel="stylesheet" href="style.css">
+<style>
+  .help-hero { margin: 18px; border-radius: 18px; background: var(--pnb-blue); color: #fff; padding: 26px 22px; }
+  .help-hero h2 { color: #fff; font-size: 1.4rem; margin-bottom: 6px; }
+  .help-hero p { color: #b8c9e6; font-size: .88rem; }
+  .help-section { margin: 0 18px 18px; background: var(--panel); border: 1px solid var(--line); border-radius: 16px; overflow: hidden; }
+  .help-section-title { padding: 14px 18px 8px; font-size: .7rem; font-weight: 700; letter-spacing: .1em; color: var(--pnb-blue); text-transform: uppercase; background: #f8fafc; border-bottom: 1px solid var(--line); }
+  .faq { border-bottom: 1px solid var(--line); }
+  .faq-q { display: flex; justify-content: space-between; align-items: center; gap: 14px; padding: 16px 18px; font-size: .9rem; font-weight: 600; color: var(--ink); cursor: pointer; }
+  .faq-q i { color: var(--pnb-blue); transition: transform .2s; }
+  .faq.open .faq-q i { transform: rotate(180deg); }
+  .faq-a { max-height: 0; overflow: hidden; transition: max-height .3s ease; padding: 0 18px; font-size: .85rem; color: var(--text-dim); line-height: 1.6; }
+  .faq.open .faq-a { max-height: 500px; padding: 0 18px 18px; }
+  .contact-row { display: flex; align-items: center; gap: 14px; padding: 16px 18px; border-bottom: 1px solid var(--line); text-decoration: none; color: inherit; }
+  .contact-icon { width: 42px; height: 42px; border-radius: 12px; background: #fff9e6; color: var(--pnb-gold-hover); display: grid; place-items: center; font-size: 1rem; flex-shrink: 0; }
+</style>
+</head>
+<body>
+
+<div class="mob-shell">
+  <header class="mob-header">
+    <div class="mob-header-inner">
+      <div style="display:flex; align-items:center; gap:12px;">
+        <button class="mob-menu-btn" id="menuBtn"><i class="fas fa-bars"></i></button>
+        <h1 style="font-size:1.05rem; color:var(--pnb-blue);">Help & Support</h1>
+      </div>
+    </div>
+  </header>
+
+  <section class="help-hero">
+    <h2>How can we help?</h2>
+    <p>Search our FAQs or reach a specialist for account, transfer, or security questions.</p>
+  </section>
+
+  <div class="help-section">
+    <div class="help-section-title">Contact us</div>
+    <a href="tel:+63288881000" class="contact-row">
+      <div class="contact-icon"><i class="fas fa-phone"></i></div>
+      <div><div style="font-size:.9rem; font-weight:700; color:var(--pnb-blue);">Call customer service</div><div style="font-size:.78rem; color:var(--text-faint);">+63 2 0000 1000 · 24/7</div></div>
+    </a>
+    <div class="contact-row" id="reportRow" style="cursor:pointer;">
+      <div class="contact-icon" style="background:#fee2e2;color:#b91c1c;"><i class="fas fa-triangle-exclamation"></i></div>
+      <div><div style="font-size:.9rem; font-weight:700; color:#b91c1c;">Report fraud or a lost card</div><div style="font-size:.78rem; color:var(--text-faint);">Available 24/7</div></div>
+    </div>
+  </div>
+
+  <div class="help-section">
+    <div class="help-section-title">Frequently asked questions</div>
+    <div class="faq"><div class="faq-q"><span>How do I send money to another PNB customer?</span><i class="fas fa-chevron-down"></i></div><div class="faq-a">From your dashboard, tap <strong>To PNB Account</strong>. Enter the recipient's 10-digit account number and the amount. You'll confirm with your 4-digit PIN and a transfer code. A 3% fee applies.</div></div>
+    <div class="faq"><div class="faq-q"><span>How do I change my transaction PIN?</span><i class="fas fa-chevron-down"></i></div><div class="faq-a">Go to <strong>Profile</strong> → <strong>Settings</strong> → <strong>Change transaction PIN</strong>. Enter your current PIN, then your new 4-digit PIN twice.</div></div>
+    <div class="faq"><div class="faq-q"><span>Is my money insured?</span><i class="fas fa-chevron-down"></i></div><div class="faq-a">Yes. Deposits with PNB are insured up to ₱500,000 per depositor by the Philippine Deposit Insurance Corporation (PDIC).</div></div>
+  </div>
+</div>
+
+<nav class="bottom-nav">
+  <a href="dashboard.html" class="bottom-nav-item"><i class="fas fa-house"></i><span>Home</span></a>
+  <a href="history.html" class="bottom-nav-item"><i class="fas fa-clock-rotate-left"></i><span>History</span></a>
+  <a href="#" id="bottomNavMenu" class="bottom-nav-item"><i class="fas fa-bars"></i><span>Menu</span></a>
+  <a href="profile.html" class="bottom-nav-item"><i class="fas fa-user"></i><span>Profile</span></a>
+</nav>
+
+<script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-firestore-compat.js"></script>
+<script src="firebase-config.js"></script>
+<script src="drawer.js"></script>
+
+<script>
+document.querySelectorAll('.faq').forEach(f => { f.querySelector('.faq-q').addEventListener('click', () => f.classList.toggle('open')); });
+document.getElementById('reportRow').addEventListener('click', () => stbToast('Fraud report submitted.', 'success'));
+</script>
+</body>
+</html>
